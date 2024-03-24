@@ -12,7 +12,11 @@ const {
 } = require("../utils/user");
 
 const User = require("../models/User");
-const { generateToken, validateJWT } = require("../utils/helpers");
+const {
+  generateToken,
+  validateJWT,
+  getPasswordResetFeUrl,
+} = require("../utils/helpers");
 const { sendMail } = require("../utils/sendMail");
 
 const register = async (req, res, next) => {
@@ -137,11 +141,10 @@ const generateResetPasswordLink = async (req, res, next) => {
     validateJWT(currentResetPasswordToken);
 
     const resetPasswordToken = await GenerateTokenAndUpdateUser(email);
-
-    const passwordResetLink = `http://localhost:4000/api/auth/reset-pwd?token=${resetPasswordToken}`;
+    const passwordResetLink = getPasswordResetFeUrl(resetPasswordToken);
     const emailData = getEmailData(email, passwordResetLink);
 
-    sendMail(emailData, { email });
+    // sendMail(emailData, { email });
 
     return res.status(200).json({
       message: "Password reset link sent successfully",
@@ -153,10 +156,10 @@ const generateResetPasswordLink = async (req, res, next) => {
 
     if (errorMessage === "jwt expired") {
       const resetPasswordToken = await GenerateTokenAndUpdateUser(email);
-      const passwordResetLink = `http://localhost:4000/api/auth/reset-pwd?token=${resetPasswordToken}`;
+      const passwordResetLink = getPasswordResetFeUrl(resetPasswordToken);
       const emailData = getEmailData(email, passwordResetLink);
 
-      sendMail(emailData, { email });
+      //   sendMail(emailData, { email });
 
       return res.status(200).json({
         message: "Password reset link sent successfully",
@@ -221,6 +224,10 @@ const resetPassword = async (req, res, next) => {
       status: 200,
     });
   } catch (error) {
+    if (error.message === "jwt expired") {
+      const error = new Error("Password reset link expired.");
+      return next(error);
+    }
     next(error);
   }
 };

@@ -1,7 +1,10 @@
 const nodeMailer = require("nodemailer");
+require("dotenv").config();
 
 const sendMail = (emailData, senderDetails) => {
   const { email } = senderDetails;
+  const mailPassword = process.env.MAIL_PASSWORD;
+  const senderEmail = process.env.SENDER_MAIL;
 
   try {
     const transporter = nodeMailer.createTransport({
@@ -9,13 +12,13 @@ const sendMail = (emailData, senderDetails) => {
       port: 465,
       secure: true,
       auth: {
-        user: "zaiem.180410116045@gmail.com",
-        pass: "xujadgmwcfcgxjsy",
+        user: senderEmail,
+        pass: mailPassword,
       },
     });
 
     const mailOptions = {
-      from: "Zaiem <zaiem.180410116045@gmail.com>",
+      from: `Zaiem <${senderEmail}>`,
       to: email,
       subject: emailData.subject,
       html: emailData.content,

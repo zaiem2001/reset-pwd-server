@@ -3,6 +3,7 @@ const {
   ERROR_MESSAGES,
   PASSWORD_RESET_COOLDOWN_TIME,
 } = require("../constants/Errors");
+const { PASSWORD_RESET_FE_URL } = require("../constants/constants");
 require("dotenv").config();
 
 const generateToken = async (payload) => {
@@ -28,4 +29,7 @@ const validateJWT = (currentResetPasswordToken) => {
   return true;
 };
 
-module.exports = { generateToken, validateJWT };
+const getPasswordResetFeUrl = (passwordResetToken) =>
+  `${PASSWORD_RESET_FE_URL}${passwordResetToken}`;
+
+module.exports = { generateToken, validateJWT, getPasswordResetFeUrl };
