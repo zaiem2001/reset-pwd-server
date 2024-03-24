@@ -144,6 +144,7 @@ const generateResetPasswordLink = async (req, res, next) => {
     const passwordResetLink = getPasswordResetFeUrl(resetPasswordToken);
     const emailData = getEmailData(email, passwordResetLink);
 
+    // ** NOTE: This funciton is used to send the mail **
     // sendMail(emailData, { email });
 
     return res.status(200).json({
